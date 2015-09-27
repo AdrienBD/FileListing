@@ -12,6 +12,8 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import message.Message;
+
 @SuppressWarnings("serial")
 public class View extends JPanel implements ActionListener, Observer {
 
@@ -45,8 +47,17 @@ public class View extends JPanel implements ActionListener, Observer {
 
 	@Override
 	public void update(Observable o, Object arg) {
-		if (arg instanceof Boolean) {
-			launchBtn.setEnabled((boolean) arg);
+		if (arg instanceof Message) {
+			Message message = (Message) arg;
+			switch(message.title) {
+			case LAUNCHABLE:
+			case PROCESSED:
+				this.launchBtn.setEnabled(true);
+				break;
+			case LAUNCHED:
+				this.launchBtn.setEnabled(false);
+				break;
+			}
 		}
 	}
 

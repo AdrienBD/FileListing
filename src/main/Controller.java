@@ -6,10 +6,12 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.util.Observable;
 
 import javax.swing.JFrame;
+
+import message.Message;
+import message.MessageTitle;
 
 public class Controller extends Observable {
 	
@@ -42,14 +44,22 @@ public class Controller extends Observable {
 	}
 	
 	public void launchProcess() {
+		this.setChanged();
+		this.notifyObservers(new Message(MessageTitle.LAUNCHED));
+		
 		File[] files = toListDirectory.listFiles();
 		exportFileList(files);
+		
+		this.setChanged();
+		this.notifyObservers(new Message(MessageTitle.PROCESSED));
 	}
 	
 	private void updateLaunchable() {
 		launchable = this.exportFile != null && this.toListDirectory != null;
-		this.setChanged();
-		this.notifyObservers(launchable);
+		if (launchable) {
+			this.setChanged();
+			this.notifyObservers(new Message(MessageTitle.LAUNCHABLE));
+		}
 	}
 	
 	private void exportFileList(File[] files) {
