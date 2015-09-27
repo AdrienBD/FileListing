@@ -3,6 +3,9 @@ package main;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.util.Observable;
+import java.util.Observer;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -10,42 +13,23 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 @SuppressWarnings("serial")
-public class View extends JPanel implements ActionListener {
+public class View extends JPanel implements ActionListener, Observer {
 
+	private Controller controller;
 	private JButton directoryToListBtn;
 	private JLabel directoryToListLbl;
 	private JButton exportDirectoryBtn;
 	private JLabel exportDirectoryLbl;
+	private JButton launchBtn;
 
-	public View() {
-		JPanel topPanel = new JPanel();
-		JPanel bottomPanel = new JPanel();
-		this.setupTopLine(topPanel);
-		this.setupBottomLine(bottomPanel);
-		this.add(topPanel);
-		this.add(bottomPanel);
-	}
-	
-	public void setupTopLine(JPanel topPanel) {
-		directoryToListBtn = new JButton("Choose a directory to list");
-		directoryToListLbl = new JLabel("No directory chosen");
-		topPanel.add(directoryToListBtn);
-		topPanel.add(directoryToListLbl);
-		
-		directoryToListBtn.addActionListener(this);
-	}
-	
-	public void setupBottomLine(JPanel bottomPanel) {
-		exportDirectoryBtn = new JButton("Choose a file to save file list");
-		exportDirectoryLbl = new JLabel("No directory chosen");
-		bottomPanel.add(exportDirectoryBtn);
-		bottomPanel.add(exportDirectoryLbl);
-		
-		exportDirectoryBtn.addActionListener(this);
+	public View(Controller controller) {
+		this.controller = controller;
+		this.controller.addObserver(this);
+		this.setupUI();
 	}
 	
 	public Dimension getPreferredSize() {
-		return new Dimension(400, 200);
+		return new Dimension(600, 200);
 	}
 
 	@Override
@@ -54,6 +38,73 @@ public class View extends JPanel implements ActionListener {
 			directoryToListBtnClicked(e);
 		} else if (e.getSource() == exportDirectoryBtn) {
 			exportDirectoryBtnClicked(e);
+		} else if (e.getSource() == launchBtn) {
+			this.controller.launchProcess();
+		}
+	}
+
+	@Override
+	public void update(Observable o, Object arg) {
+		if (arg instanceof Boolean) {
+			launchBtn.setEnabled((boolean) arg);
+		}
+	}
+
+	private void setupUI() {
+		JPanel listDirectoryPanel = new JPanel();
+		JPanel exportFilePanel = new JPanel();
+		JPanel launchPanel = new JPanel();
+		
+		this.setupListDirectoryPanel(listDirectoryPanel);
+		this.setupExportFilePanel(exportFilePanel);
+		this.setupLaunchPanel(launchPanel);
+		
+		this.add(listDirectoryPanel);
+		this.add(exportFilePanel);
+		this.add(launchPanel);
+	}
+	
+	private void setupListDirectoryPanel(JPanel listDirectoryPanel) {
+		directoryToListBtn = new JButton("Choose a directory to list");
+		directoryToListLbl = new JLabel("No directory chosen");
+		listDirectoryPanel.add(directoryToListBtn);
+		listDirectoryPanel.add(directoryToListLbl);
+		
+		directoryToListBtn.addActionListener(this);
+	}
+	
+	private void setupExportFilePanel(JPanel exportFilePanel) {
+		exportDirectoryBtn = new JButton("Choose a file to save file list");
+		exportDirectoryLbl = new JLabel("No directory chosen");
+		exportFilePanel.add(exportDirectoryBtn);
+		exportFilePanel.add(exportDirectoryLbl);
+		
+		exportDirectoryBtn.addActionListener(this);
+	}
+	
+	private void setupLaunchPanel(JPanel launchPanel) {
+		launchBtn = new JButton("Start");
+		launchBtn.setEnabled(false);
+		launchPanel.add(launchBtn);
+		
+		launchBtn.addActionListener(this);
+	}
+	
+	private void directoryToListBtnClicked(ActionEvent event) {
+		JFileChooser chooser = setupFileChooser(Action.LIST);
+		if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+			File directoryToList = chooser.getSelectedFile();
+			controller.setToListDirectory(directoryToList);
+			directoryToListLbl.setText(directoryToList.getPath());
+		}
+	}
+	
+	private void exportDirectoryBtnClicked(ActionEvent event) {
+		JFileChooser chooser = setupFileChooser(Action.EXPORT);
+		if (chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+			File exportFile = chooser.getSelectedFile();
+			controller.setExportFile(exportFile);
+			exportDirectoryLbl.setText(exportFile.getPath());
 		}
 	}
 	
@@ -74,29 +125,5 @@ public class View extends JPanel implements ActionListener {
 		}
 		
 		return chooser;
-	}
-	
-	private void directoryToListBtnClicked(ActionEvent event) {
-		JFileChooser chooser = setupFileChooser(Action.LIST);
-		if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-			System.out.println("getCurrentDirectory(): "
-					+ chooser.getCurrentDirectory());
-			System.out.println("getSelectedFile() : "
-					+ chooser.getSelectedFile());
-		} else {
-			System.out.println("No Selection ");
-		}
-	}
-	
-	private void exportDirectoryBtnClicked(ActionEvent event) {
-		JFileChooser chooser = setupFileChooser(Action.EXPORT);
-		if (chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-			System.out.println("getCurrentDirectory(): "
-					+ chooser.getCurrentDirectory());
-			System.out.println("getSelectedFile() : "
-					+ chooser.getSelectedFile());
-		} else {
-			System.out.println("No Selection ");
-		}
 	}
 }
