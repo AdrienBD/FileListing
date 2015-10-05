@@ -7,6 +7,7 @@ import java.io.File;
 import java.util.Observable;
 import java.util.Observer;
 
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
@@ -62,6 +63,8 @@ public class View extends JPanel implements ActionListener, Observer {
 	}
 
 	private void setupUI() {
+		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		
 		JPanel listDirectoryPanel = new JPanel();
 		JPanel exportFilePanel = new JPanel();
 		JPanel launchPanel = new JPanel();
