@@ -24,6 +24,7 @@ public class View extends JPanel implements ActionListener, Observer {
 	private JButton exportDirectoryBtn;
 	private JLabel exportDirectoryLbl;
 	private JButton launchBtn;
+	private JLabel statusLbl;
 
 	public View(Controller controller) {
 		this.controller = controller;
@@ -52,11 +53,15 @@ public class View extends JPanel implements ActionListener, Observer {
 			Message message = (Message) arg;
 			switch(message.title) {
 			case LAUNCHABLE:
+				this.launchBtn.setEnabled(true);
+				break;
 			case PROCESSED:
 				this.launchBtn.setEnabled(true);
+				this.statusLbl.setText("Processed");
 				break;
 			case LAUNCHED:
 				this.launchBtn.setEnabled(false);
+				this.statusLbl.setText("Launched");
 				break;
 			}
 		}
@@ -99,7 +104,10 @@ public class View extends JPanel implements ActionListener, Observer {
 	private void setupLaunchPanel(JPanel launchPanel) {
 		launchBtn = new JButton("Start");
 		launchBtn.setEnabled(false);
+		statusLbl = new JLabel("");
+		
 		launchPanel.add(launchBtn);
+		launchPanel.add(statusLbl);
 		
 		launchBtn.addActionListener(this);
 	}

@@ -66,7 +66,6 @@ public class Controller extends Observable {
 		try {
 			BufferedWriter bw = new BufferedWriter(new FileWriter(exportFile));
 			for (File f : files) {
-				System.out.println(f.getName());
 				bw.write(f.getName());
 				bw.newLine();
 			}
