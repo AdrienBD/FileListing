@@ -124,7 +124,7 @@ public class View extends JPanel implements ActionListener, Observer {
 	
 	private JFileChooser setupFileChooser(Action action) {
 		JFileChooser chooser = new JFileChooser();
-		chooser.setCurrentDirectory(new java.io.File("."));
+		chooser.setCurrentDirectory(new java.io.File(System.getProperty("user.home")));
 		switch(action) {
 			case LIST:
 				chooser.setDialogTitle("Choose the directory you want to list files from");
