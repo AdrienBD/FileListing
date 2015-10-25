@@ -1,7 +1,5 @@
 package main;
 
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -9,6 +7,8 @@ import java.io.IOException;
 import java.util.Observable;
 
 import javax.swing.JFrame;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 
 import message.Message;
 import message.MessageTitle;
@@ -20,19 +20,17 @@ public class Controller extends Observable {
 	private File exportFile;
 
 	public void initiateFrame() {
-		JFrame frame = new JFrame("FileListing software - Adrien Blaise");
-		View panel = new View(this);
-		frame.addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent e) {
-				System.exit(0);
-			}
-		});
-		frame.getContentPane().add(panel, "Center");
-		frame.setSize(panel.getPreferredSize());
+		JFrame frame = new JFrame(Main.SOFTWARE_NAME);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setLocationRelativeTo(null);
+		
+		this.addMainPanelToFrame(frame);
+		this.setMenu(frame);
+		
+		frame.pack();
 		frame.setVisible(true);
 	}
-	
+
 	public void setToListDirectory(File toListDirectory) {
 		this.toListDirectory = toListDirectory;
 		updateLaunchable();
@@ -48,10 +46,35 @@ public class Controller extends Observable {
 		this.notifyObservers(new Message(MessageTitle.LAUNCHED));
 		
 		File[] files = toListDirectory.listFiles();
-		exportFileList(files);
+		try {
+			exportFileList(files);
+			
+			this.setChanged();
+			this.notifyObservers(new Message(MessageTitle.PROCESSED));
+		} catch (IOException e) {
+
+			this.setChanged();
+			this.notifyObservers(new Message(MessageTitle.ERROR_ON_EXPORT));
+		}
 		
-		this.setChanged();
-		this.notifyObservers(new Message(MessageTitle.PROCESSED));
+	}
+	
+	private void addMainPanelToFrame(JFrame frame) {
+		View panel = new View(this);
+		frame.getContentPane().add(panel, "Center");
+		frame.setSize(panel.getPreferredSize());
+	}
+
+	private void setMenu(JFrame frame) {
+//		System.setProperty("apple.laf.useScreenMenuBar", "true");
+//      System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Test");
+        
+		JMenuBar menuBar = new JMenuBar();
+		
+		JMenuItem aboutMenuItem = new JMenuItem("About");
+		menuBar.add(aboutMenuItem);
+		
+		frame.setJMenuBar(menuBar);
 	}
 	
 	private void updateLaunchable() {
@@ -62,18 +85,13 @@ public class Controller extends Observable {
 		}
 	}
 	
-	private void exportFileList(File[] files) {
-		try {
-			BufferedWriter bw = new BufferedWriter(new FileWriter(exportFile));
-			for (File f : files) {
-				bw.write(f.getName());
-				bw.newLine();
-			}
-			bw.flush();
-			bw.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+	private void exportFileList(File[] files) throws IOException {
+		BufferedWriter bw = new BufferedWriter(new FileWriter(exportFile));
+		for (File f : files) {
+			bw.write(f.getName());
+			bw.newLine();
 		}
+		bw.flush();
+		bw.close();
 	}
 }

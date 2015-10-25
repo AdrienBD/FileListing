@@ -4,5 +4,6 @@ public enum MessageTitle {
 
 	LAUNCHABLE,
 	LAUNCHED,
-	PROCESSED
+	PROCESSED,
+	ERROR_ON_EXPORT
 }
