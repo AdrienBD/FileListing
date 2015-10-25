@@ -17,6 +17,13 @@ import message.Message;
 
 @SuppressWarnings("serial")
 public class View extends JPanel implements ActionListener, Observer {
+	
+	private final int HEIGHT = 200;
+	private final int WIDTH = 800;
+	private final String NO_DIRECTORY_CHOSEN_STRING = "No directory chosen";
+	private final String CHOOSE_A_DIRECTORY_STRING = "Choose a directory to list";
+	private final String CHOOSE_A_FILE_STRING = "Choose a file to save the folder's file list";
+	private final String START_STRING = "Start";
 
 	private Controller controller;
 	private JButton directoryToListBtn;
@@ -33,7 +40,7 @@ public class View extends JPanel implements ActionListener, Observer {
 	}
 	
 	public Dimension getPreferredSize() {
-		return new Dimension(600, 200);
+		return new Dimension(WIDTH, HEIGHT);
 	}
 
 	@Override
@@ -53,17 +60,18 @@ public class View extends JPanel implements ActionListener, Observer {
 			Message message = (Message) arg;
 			switch(message.title) {
 			case LAUNCHABLE:
-				this.launchBtn.setEnabled(true);
-				break;
 			case PROCESSED:
 				this.launchBtn.setEnabled(true);
-				this.statusLbl.setText("Processed");
 				break;
 			case LAUNCHED:
 				this.launchBtn.setEnabled(false);
-				this.statusLbl.setText("Launched");
+				break;
+			case ERROR_ON_EXPORT:
+				this.launchBtn.setEnabled(true);
 				break;
 			}
+
+			this.statusLbl.setText(message.getStatus());
 		}
 	}
 
@@ -84,8 +92,8 @@ public class View extends JPanel implements ActionListener, Observer {
 	}
 	
 	private void setupListDirectoryPanel(JPanel listDirectoryPanel) {
-		directoryToListBtn = new JButton("Choose a directory to list");
-		directoryToListLbl = new JLabel("No directory chosen");
+		directoryToListBtn = new JButton(CHOOSE_A_DIRECTORY_STRING);
+		directoryToListLbl = new JLabel(NO_DIRECTORY_CHOSEN_STRING);
 		listDirectoryPanel.add(directoryToListBtn);
 		listDirectoryPanel.add(directoryToListLbl);
 		
@@ -93,8 +101,8 @@ public class View extends JPanel implements ActionListener, Observer {
 	}
 	
 	private void setupExportFilePanel(JPanel exportFilePanel) {
-		exportDirectoryBtn = new JButton("Choose a file to save file list");
-		exportDirectoryLbl = new JLabel("No directory chosen");
+		exportDirectoryBtn = new JButton(CHOOSE_A_FILE_STRING);
+		exportDirectoryLbl = new JLabel(NO_DIRECTORY_CHOSEN_STRING);
 		exportFilePanel.add(exportDirectoryBtn);
 		exportFilePanel.add(exportDirectoryLbl);
 		
@@ -102,7 +110,7 @@ public class View extends JPanel implements ActionListener, Observer {
 	}
 	
 	private void setupLaunchPanel(JPanel launchPanel) {
-		launchBtn = new JButton("Start");
+		launchBtn = new JButton(START_STRING);
 		launchBtn.setEnabled(false);
 		statusLbl = new JLabel("");
 		
