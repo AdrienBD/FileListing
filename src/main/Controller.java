@@ -1,5 +1,7 @@
 package main;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -7,13 +9,16 @@ import java.io.IOException;
 import java.util.Observable;
 
 import javax.swing.JFrame;
+import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
 import message.Message;
 import message.MessageTitle;
+import view.LicenseView;
+import view.View;
 
-public class Controller extends Observable {
+public class Controller extends Observable implements ActionListener {
 	
 	private boolean launchable;
 	private File toListDirectory;
@@ -66,13 +71,17 @@ public class Controller extends Observable {
 	}
 
 	private void setMenu(JFrame frame) {
-//		System.setProperty("apple.laf.useScreenMenuBar", "true");
-//      System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Test");
-        
 		JMenuBar menuBar = new JMenuBar();
 		
-		JMenuItem aboutMenuItem = new JMenuItem("About");
-		menuBar.add(aboutMenuItem);
+		JMenu aboutMenu = new JMenu("About");
+		menuBar.add(aboutMenu);
+		
+		JMenuItem versionItem = new JMenuItem(Main.VERSION_NAME);
+		JMenuItem licenseItem = new JMenuItem("License");
+		licenseItem.addActionListener(this);
+		
+		aboutMenu.add(versionItem);
+		aboutMenu.add(licenseItem);
 		
 		frame.setJMenuBar(menuBar);
 	}
@@ -93,5 +102,10 @@ public class Controller extends Observable {
 		}
 		bw.flush();
 		bw.close();
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		new LicenseView();
 	}
 }

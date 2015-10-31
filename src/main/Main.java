@@ -7,6 +7,8 @@ import javax.swing.UnsupportedLookAndFeelException;
 public class Main {
 	
 	public static final String SOFTWARE_NAME = "FileListing software - Adrien Blaise";
+	public static final int VERSION_BUILD = 0;
+	public static final String VERSION_NAME = "v0.1";
 
 	public static void main(String[] args) {
 		setLookAndFeel();
